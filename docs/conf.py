@@ -62,6 +62,10 @@ html_static_path = ['_static']
 
 # run the example scripts
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), "examples"))
+outdir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "examples", "output")
+if not os.path.isdir(outdir):
+    os.mkdir(outdir)
+
 import nEDM_at_PSI_filter
 import cramer_rao
 import simulation
