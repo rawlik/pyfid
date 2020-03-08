@@ -8,7 +8,6 @@ Welcome to pyfid's documentation!
    filter
    simulation
    cramer_rao
-   test
 
 pyfid automodule
 ================
