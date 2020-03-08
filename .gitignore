@@ -1,2 +1,6 @@
 docs/_build**
+examples/output
+
 .vscode
+*.ipynb_checkpoints
+*__pycache__
