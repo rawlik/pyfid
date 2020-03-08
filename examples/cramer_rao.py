@@ -17,7 +17,7 @@ noise = 0.09
 T = np.arange(-1, 1, 0.01)
 C = pyfid.cramer_rao.cramer_rao(sig, p0, T, noise,
     show_plot=True, quad_precision=True)
-plt.savefig(os.path.join(outdir, "cramer_rao_signal.png"))
+plt.savefig(os.path.join(outdir, "cramer_rao.png"))
 
 print('Inverse of the Fisher information matrix:')
 print(C)
