@@ -1,9 +1,6 @@
 Cramer-Rao bounds
 =================
 
-.. toctree::
-    cramer_rao_notebook
-
 
 API documentation
 -----------------
@@ -19,6 +16,3 @@ Example
 
 .. literalinclude:: ../examples/cramer_rao.py
    :language: python
-
-Notebook
---------
