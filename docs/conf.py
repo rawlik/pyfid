@@ -58,6 +58,10 @@ html_theme = 'alabaster'
 html_static_path = ['_static']
 
 
+# to make readthedocs happy
+master_doc = 'index'
+
+
 # run the example scripts
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), "examples"))
 outdir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "examples", "output")
