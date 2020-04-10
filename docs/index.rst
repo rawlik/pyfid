@@ -8,6 +8,7 @@ Welcome to pyfid's documentation!
    filter
    simulation
    cramer_rao
+   nEDM_at_PSI
 
 pyfid automodule
 ================
