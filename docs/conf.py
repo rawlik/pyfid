@@ -37,7 +37,7 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
     "sphinx_rtd_theme",
-    "numpydoc",
+    # "numpydoc",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
