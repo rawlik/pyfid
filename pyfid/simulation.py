@@ -8,9 +8,14 @@ from pyfid.cramer_rao import cramer_rao
 
 
 class FIDsim:
+    """
+    Documentation of FIDsim class.
+    """
     def __init__(self, amplitude_model, amplitude_parameters, phase_model,
         phase_parameters, sampling_rate, duration, snr, filter_func=None,
         filter_advance_time=None):
+        """Documentation of the FID constructor.
+        """
 
         self.sampling_rate = sampling_rate
         self.duration = duration
@@ -32,20 +37,35 @@ class FIDsim:
         self.amplitude = amplitude
 
         def phase(t):
-            return phase_model(t, *phase_parameters)
+            return phase_model(t, *self.phase_parameters)
         self.phase = phase
 
 
     def real_favg(self):
-        def ph(t):
-            return self.phase_model(t, *self.phase_parameters)
-
-        real_favg = (ph(self.T[-1]) - ph(self.T[0])) / (self.T[-1] - self.T[0]) / (2 * np.pi)
+        """Calculate the real average frequency of the signal.
+        """
+        real_favg = (self.phase(self.T[-1]) - self.phase(self.T[0])) / (self.T[-1] - self.T[0]) / (2 * np.pi)
 
         return real_favg
 
 
-    def simulate(self):
+    def simulate(self, n=1, squeeze=True):
+        """Simulate an FID signal.
+
+        Parameters
+        n : int
+            The number of signals to simulate. Default is 1.
+        squeeze : int
+            Whether to squeeze the dimension if n=1. If False always
+            return a 2D array.
+
+        Returns
+        -------
+        D : numpy array
+            The array of measurements. The last axis are points.
+            If n>1 or squeeze is True it is a 2D array and the first axis
+            are different signals.
+        """
         if self.filter_func is None:
             Tl = self.T
         else:
@@ -56,17 +76,23 @@ class FIDsim:
                 + 1 / self.sampling_rate]
 
         D = self.amplitude(Tl) * np.sin(self.phase(Tl))
-        D += np.random.randn(Tl.size) * self.noise
+        D = D + np.random.randn(n, Tl.size) * self.noise
 
         if self.filter_func is not None:
-            D = self.filter_func(D)
+            D = self.filter_func(D, axis=-1)
 
-        D = D[np.logical_and(Tl >= self.T[0], Tl <= self.T[-1])]
+        D = D[:, np.logical_and(Tl >= self.T[0], Tl <= self.T[-1])]
+
+        if squeeze:
+            D = np.squeeze(D)
 
         return D
 
 
     def cramer_rao_bound(self):
+        """Calculate the Cramer-Rao bound: the lower limit
+        of the precision with which the average frequency can be estimated.
+        """
         def crmodel(t, parameters):
             amplitude_parameters = parameters[:len(self.amplitude_parameters)]
             phase_parameters = parameters[-len(self.phase_parameters):]
