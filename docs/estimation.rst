@@ -21,9 +21,15 @@ This function can use one of many models for fitting:
     :lines: 13-37
 
 
-Direct fit
-----------
+Directly fit whole signal
+-------------------------
 .. autofunction:: pyfid.estimation.direct_fit
+
+.. figure:: ../examples/output/direct_fit.png
+
+.. literalinclude:: ../examples/direct_fit.py
+   :language: python
+
 
 TODO Others
 -----------

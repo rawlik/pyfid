@@ -12,20 +12,18 @@ class FIDsim:
     Documentation of FIDsim class.
     """
     def __init__(self, amplitude_model, amplitude_parameters, phase_model,
-        phase_parameters, sampling_rate, duration, snr, filter_func=None,
+        phase_parameters, fs, duration, snr, filter_func=None,
         filter_advance_time=None):
         """Documentation of the FID constructor.
         """
 
-        self.sampling_rate = sampling_rate
+        self.fs = fs
         self.duration = duration
-        self.filter_advance_time = filter_advance_time
+        self.filter_advance_time = 0 if filter_advance_time is None else filter_advance_time
         self.filter_func = filter_func
         # 1/s-t-n at the beginning
         # sine amplitude (NOT peak-to-peak) to standard deviation of noise
-        self.noise = 1 / snr
-
-        self.T = np.arange(0, duration, 1 / sampling_rate)
+        self.T = np.arange(0, duration, 1 / fs)
 
         self.phase_model = phase_model
         self.phase_parameters = phase_parameters
@@ -39,6 +37,9 @@ class FIDsim:
         def phase(t):
             return phase_model(t, *self.phase_parameters)
         self.phase = phase
+
+        self.snr = snr
+        self.noise = self.amplitude(0) / self.snr
 
 
     def real_favg(self):
@@ -74,17 +75,17 @@ class FIDsim:
             Tl = self.T
         else:
             Tl = np.r_[
-                np.arange(self.T[0] - self.filter_advance_time, self.T[0], 1 / self.sampling_rate),
+                np.arange(self.T[0] - self.filter_advance_time, self.T[0], 1 / self.fs),
                 self.T,
-                np.arange(self.T[-1], self.T[-1] + self.filter_advance_time, 1 / self.sampling_rate)
-                + 1 / self.sampling_rate]
+                np.arange(self.T[-1], self.T[-1] + self.filter_advance_time, 1 / self.fs)
+                + 1 / self.fs]
 
         ph = np.random.random((n, 1)) if random_phase else 0
         D = self.amplitude(Tl) * np.sin(self.phase(Tl) + ph)
-        D = D + np.random.randn(n, Tl.size) * self.sigma()
+        D = D + np.random.randn(n, Tl.size) * self.noise
 
         if self.filter_func is not None:
-            D = self.filter_func(D, axis=-1)
+            D = np.apply_along_axis(self.filter_func, -1, D )
 
         D = D[:, np.logical_and(Tl >= self.T[0], Tl <= self.T[-1])]
 
@@ -98,12 +99,12 @@ class FIDsim:
         """Calculate the Cramer-Rao bound: the lower limit
         of the precision with which the average frequency can be estimated.
         """
-        def crmodel(t, parameters):
+        def crmodel(t, *parameters):
             amplitude_parameters = parameters[:len(self.amplitude_parameters)]
             phase_parameters = parameters[-len(self.phase_parameters):]
 
             return self.amplitude_model(t, *amplitude_parameters) * \
-                np.sin(self.phase_model(t, phase_parameters))
+                np.sin(self.phase_model(t, *phase_parameters))
 
         # evaluate the cramer_rao bound on the
         p0 = list(self.amplitude_parameters) + list(self.phase_parameters)
@@ -120,6 +121,12 @@ class FIDsim:
         sfCR *= 1 / (self.T[-1] - self.T[0]) / (2 * np.pi)
 
         return sfCR
+
+    def sigma(self):
+        """
+        The array of the noise amplitude.
+        """
+        return np.ones(self.T.size) * self.noise
 
 
 def any_poly_frequency(frequency_coefficients, **kwargs):
@@ -185,7 +192,7 @@ def rand_poly_frequency_coeffs(f0, deg, drift, duration, drift_linear_mean=0):
 def rand_poly_frequency_exp_amplitude(f0, t1, deg, drift, duration, **kwargs):
     coeffs = rand_poly_frequency_coeffs(f0, deg, drift, duration)
 
-    return any_poly_frequency_exp_amplitude(t1, coeffs, duration=duration,
+    return any_poly_frequency_exp_amplitude(t1, frequency_coefficients=coeffs, duration=duration,
         **kwargs)
 
 
@@ -211,7 +218,7 @@ def const_frequency_two_exp_amplitude(f0, **kwargs):
 def rand_poly_frequency_two_exp_amplitude(f0, deg, drift, duration, **kwargs):
     coeffs = rand_poly_frequency_coeffs(f0, deg, drift, duration)
 
-    return any_poly_frequency_two_exp_amplitude(coeffs, duration=duration, **kwargs)
+    return any_poly_frequency_two_exp_amplitude(frequency_coefficients=coeffs, duration=duration, **kwargs)
 
 
 def lin_frequency_two_exp_amplitude(f0, drift, **kwargs):

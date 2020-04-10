@@ -16,7 +16,7 @@ sim = pyfid.simulation.rand_poly_frequency_exp_amplitude(
     deg=1,
     drift=0.1,
     duration=180.0,
-    sampling_rate=10,
+    fs=10,
     snr=10
 )
 

@@ -328,24 +328,20 @@ def fit_sine(X, Y, sigma=None, plot_ax=None, model_key='damped_sine_DC',
 def direct_fit(
         T, D, sD,
         double_exp=True,
-        verbose=False):
+        plot_ax=None):
     """
     Fit the whole signal.
 
     This method simply fits the whole signal. If double_exp is False then
     fit model is an exponentially damped sine, if True - damping is a sum of
     two exponents.
+
+    If plot_ax is given - plot there.
     """
-
-    if verbose:
-        fig = figure()
-        ax = fig.add_subplot(111)
-        ax.errorbar(T, D, yerr=sD, fmt='k.', capsize=0)
-
     popt, pcov, fit_details = fit_sine(
         T - T[0], D,
         sigma=sD,
-        plot_ax=ax if verbose else None,
+        plot_ax=plot_ax,
         model_key='double_damped_sine_DC' if double_exp else 'damped_sine_DC')
 
     f = popt[0]
