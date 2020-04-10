@@ -6,6 +6,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 import numpy as np
 
 import pyfid.simulation
+import pyfid.nEDMatPSI
 
 
 class Test(unittest.TestCase):
@@ -35,6 +36,13 @@ class TestSimulation(unittest.TestCase):
         d = self.s.simulate(n=3)
         self.assertEqual(len(d.shape), 2)
         self.assertEqual(d.shape[0], 3)
+
+class TestFilter(unittest.TestCase):
+    def test_nEDMfilter(self):
+        n = 100
+        f = pyfid.nEDMatPSI.nEDMfilter(np.random.rand(n))
+        self.assertIsInstance(f, np.ndarray)
+        self.assertEqual(f.shape[0], n)
 
 
 if __name__ == '__main__':

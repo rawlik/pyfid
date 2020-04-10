@@ -6,31 +6,14 @@ import scipy.signal
 import scipy.optimize
 
 import pyfid.filtering
+import pyfid.nEDMatPSI
 
 # seed the random number generator
 np.random.seed(0)
 outdir = os.path.join(os.path.dirname(__file__), "output")
 
-
 # sampling frequency
-fs = 100.
-
-# the parameters of the filter
-f0 = 7.852
-lowcut = 7.125
-highcut = 8.68
-order = 1
-
-# define the filtering function
-nyq = 0.5 * fs
-low = lowcut / nyq
-high = highcut / nyq
-b, a = scipy.signal.butter(order, [low, high], btype='band')
-
-
-def nEDMfilter(Y):
-    return scipy.signal.filtfilt(b, a, Y)
-
+fs = pyfid.nEDMatPSI.fs
 
 # load the measurement data
 # from the thesis of Perkowski
@@ -64,10 +47,11 @@ sYm = spline_norm * D[2]
 
 # Plot the frequency response
 plt.figure(figsize=(8,5))
-w, h = scipy.signal.freqz(b, a, worN=2000)
+w, h = scipy.signal.freqz(pyfid.nEDMatPSI.filter_b, pyfid.nEDMatPSI.filter_a,
+    worN=2000)
 plt.plot((fs * 0.5 / np.pi) * w, abs(h)**2, 'k-', lw=2, label='power spectrum')
 plt.plot((fs * 0.5 / np.pi) * w, abs(h), 'k--', lw=2, label='magnitude')
-plt.axvline(f0, color='black', ls='--',label='central frequency')
+plt.axvline(pyfid.nEDMatPSI.filter_f0, color='black', ls='--', label='central frequency')
 # plot measured filter frequency response
 plt.errorbar(Fm, Ym, yerr=sYm, fmt='x', ms=8, capsize=0, color='black',
     label='measured frequency response')
@@ -85,7 +69,7 @@ plt.subplot(211)
 T = np.arange(0, 15, 1/fs)
 N = np.random.randn(T.size)
 S = N
-F = nEDMfilter(S)
+F = pyfid.nEDMatPSI.nEDMfilter(S)
 C = T<5
 plt.plot(T[C], S[C], 'k.-', ms=4, alpha=0.5, label='white noise')
 plt.plot(T[C], F[C], 'r.-', lw=1.5, ms=4, label='filtered white noise')
@@ -125,7 +109,7 @@ T1 = T[T>1]
 Sin = np.sin(2*np.pi*8 * T1 + np.random.rand()*2*np.pi ) * np.exp(-T1/2.)
 S = np.r_[np.zeros(T.size - T1.size), Sin]
 Y = S + N
-Z = nEDMfilter(Y)
+Z = pyfid.nEDMatPSI.nEDMfilter(Y)
 plt.figure(figsize=(20,10))
 plt.subplot(211)
 plt.plot(T, S, 'k.-', ms=4, label='signal without noise')
@@ -144,7 +128,7 @@ plt.figure()
 F = (fs * 0.5 / np.pi) * w
 
 Noise = 0*F + 1e-3
-Signal = scipy.stats.norm.pdf(F, f0, 0.1) / max(scipy.stats.norm.pdf(F, f0, 0.1))
+Signal = scipy.stats.norm.pdf(F, pyfid.nEDMatPSI.filter_f0, 0.1) / max(scipy.stats.norm.pdf(F, pyfid.nEDMatPSI.filter_f0, 0.1))
 
 plt.plot(F, abs(h)**2, 'k-.', lw=1, label="filter's frequency responce")
 
@@ -155,7 +139,7 @@ plt.plot(F, (Signal + Noise) * abs(h)**2, 'k--', lw=2, label='filtered signal')
 plt.fill_between(F, np.minimum((Signal + Noise) * abs(h)**2, Noise),
     facecolor='None', hatch='///', edgecolor='red', lw=0)
 
-plt.annotate('actual signal', xy=(f0+0.2, 1e-2),
+plt.annotate('actual signal', xy=(pyfid.nEDMatPSI.filter_f0 + 0.2, 1e-2),
     xytext=(100, -10),
     horizontalalignment='center',
     verticalalignment='center',
@@ -172,7 +156,7 @@ plt.annotate('noise', xy=(2.5, 1e-4),
     verticalalignment='center',
     fontsize=25)
 
-plt.annotate('noise in\nfiltered signal', xy=(f0+0.3, 4e-5),
+plt.annotate('noise in\nfiltered signal', xy=(pyfid.nEDMatPSI.filter_f0 + 0.3, 4e-5),
     horizontalalignment='center',
     verticalalignment='center',
     fontsize=20)

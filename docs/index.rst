@@ -5,8 +5,8 @@ Welcome to pyfid's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   filter
    simulation
+   filter
    cramer_rao
    nEDM_at_PSI
 
@@ -16,9 +16,6 @@ pyfid automodule
    :members:
    :undoc-members:
 
-.. automodule:: pyfid.filtering
-   :members:
-   :undoc-members:
 
 Indices and tables
 ==================
