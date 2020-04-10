@@ -71,20 +71,6 @@ def noise_from_signal(T, D, fs, plot=False):
     return noise_amplitude
 
 
-def plot_filtered_white_noise():
-    plt.figure('filtered white noise', figsize=(10, 5.5))
-
-    # subplot(211)
-    # Filter noise.
-    flter.fs = 100
-    T = np.arange(0, 180, 1 / flter.fs)
-    FFTfreqs = np.fft.fftfreq(T.size, 1 / flter.fs)
-    freqs = FFTfreqs[FFTfreqs >= 0]
-
-    N = np.random.randn(T.size)
-    S = 100 * np.exp(-T / 60) * np.sin(2 * np.pi * 7.85 * T)
-
-
 T = np.arange(0, 180, 1 / pyfid.nEDMatPSI.fs)
 FFTfreqs = np.fft.fftfreq(T.size, 1 / pyfid.nEDMatPSI.fs)
 freqs = FFTfreqs[FFTfreqs >= 0]
