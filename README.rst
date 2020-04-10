@@ -1,6 +1,14 @@
+.. image:: https://readthedocs.org/projects/pyfid/badge/?version=latest
+:target: https://pyfid.readthedocs.io/en/latest/?badge=latest
+:alt: Documentation Status
+
 Installation
 ------------
 TODO
+
+Documentation
+-------------
+https://pyfid.readthedocs.io/en/latest/
 
 TODO
 ----
