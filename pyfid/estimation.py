@@ -123,6 +123,7 @@ def fit_sine(X, Y, sigma=None, plot_ax=None, model_key='damped_sine_DC',
     i = int(2 / f0 / (X[1] - X[0]))
     init_ph, sph = scipy.optimize.curve_fit(
         ph_model, X[:i], Y[:i], sigma=sigma[:i], maxfev=1000 * (len(Y) + 1))
+    init_ph = np.squeeze(init_ph)
 
     for ph in [init_ph, init_ph + np.pi]:
         # if signal is very long first fit roughly first 10 periods
