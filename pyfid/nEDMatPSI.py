@@ -10,6 +10,9 @@ import scipy.signal
 fs = 100.
 "The sampling frequency."
 
+duration = 180.
+"The duration of the FID."
+
 # the parameters of the filter
 filter_f0 = 7.852
 "The central frequency of the filter."
