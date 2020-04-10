@@ -48,6 +48,20 @@ def nEDMfilter(Y):
 
 
 def signal_mask(f):
+    """
+    Mask the frequencies where the signal is.
+
+    Used is estimating the amplitude of noise based on a signal.
+
+    Parameters
+    ----------
+    f : float or array
+        frequency
+
+    Returns
+    -------
+    mask : bool or array
+    """
     mask = (f > 7.5) & (f < 8.1)
     mask = mask | (f > 12) & (f < 13)
     mask = mask | (f > 14) & (f < 17)
