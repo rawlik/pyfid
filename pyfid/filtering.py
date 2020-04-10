@@ -13,7 +13,7 @@ def noise_suppression_factor(filter_function, fs, N=1000):
     fs : float
         The sampling frequency
 
-    Retruns
+    Returns
     -------
     supp : float
         The ratio of the standard deviation of white noise to filtered white
