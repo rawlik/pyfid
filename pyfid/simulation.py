@@ -49,8 +49,8 @@ class FIDsim:
         return real_favg
 
 
-    def simulate(self, n=1, squeeze=True):
-        r"""Simulate an FID signal.
+    def simulate(self, n=1, squeeze=True, random_phase=False):
+        """Simulate an FID signal.
 
         Parameters
         ----------
@@ -59,6 +59,9 @@ class FIDsim:
         squeeze : int
             Whether to squeeze the dimension if n=1. If False always
             return a 2D array.
+        random_phase : bool
+            If True, add a constant random term to the phase evolution,
+            different for every simulation. Default is False.
 
         Returns
         -------
@@ -76,8 +79,9 @@ class FIDsim:
                 np.arange(self.T[-1], self.T[-1] + self.filter_advance_time, 1 / self.sampling_rate)
                 + 1 / self.sampling_rate]
 
-        D = self.amplitude(Tl) * np.sin(self.phase(Tl))
-        D = D + np.random.randn(n, Tl.size) * self.noise
+        ph = np.random.random((n, 1)) if random_phase else 0
+        D = self.amplitude(Tl) * np.sin(self.phase(Tl) + ph)
+        D = D + np.random.randn(n, Tl.size) * self.sigma()
 
         if self.filter_func is not None:
             D = self.filter_func(D, axis=-1)
