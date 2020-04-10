@@ -41,7 +41,7 @@ def filter_frequency_response(freqs, b, a, fs):
         The filter taps.
     fs : float
         The sampling frequency in Hz.
-    
+
     Returns
     -------
     array
