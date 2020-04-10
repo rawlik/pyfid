@@ -5,19 +5,12 @@ import numpy as np
 import scipy.signal
 import scipy.optimize
 
-import pyfid.filtering as flter
+import pyfid.filtering
 import pyfid.nEDMatPSI
 
 
 np.random.seed(0)
 outdir = os.path.join(os.path.dirname(__file__), "output")
-
-
-def filter_frequency_response(freqs):
-    _w, h = scipy.signal.freqz(pyfid.nEDMatPSI.filter_b, pyfid.nEDMatPSI.filter_a,
-        worN=freqs * np.pi / 0.5 / pyfid.nEDMatPSI.fs)
-
-    return abs(h) ** 2
 
 
 def noise_from_signal(T, D, fs, plot=False):
@@ -30,7 +23,11 @@ def noise_from_signal(T, D, fs, plot=False):
 
     signalFFT = normedfft(D)
     windowedFFT = normedfft(D * scipy.signal.windows.hann(T.size) / 0.5 * np.sqrt(2/3))
-    filterFFT = filter_frequency_response(freqs)
+    filterFFT = pyfid.filtering.filter_frequency_response(
+        freqs=freqs,
+        b=pyfid.nEDMatPSI.filter_b,
+        a=pyfid.nEDMatPSI.filter_a,
+        fs=pyfid.nEDMatPSI.fs)
 
     mask = (freqs > 7.5) & (freqs < 8.1)
     mask = mask | (freqs > 12) & (freqs < 13)
