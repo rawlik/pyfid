@@ -50,9 +50,10 @@ class FIDsim:
 
 
     def simulate(self, n=1, squeeze=True):
-        """Simulate an FID signal.
+        r"""Simulate an FID signal.
 
         Parameters
+        ----------
         n : int
             The number of signals to simulate. Default is 1.
         squeeze : int
@@ -128,6 +129,18 @@ def any_poly_frequency(frequency_coefficients, **kwargs):
 
 
 def const_frequency_const_amplitude(f0, **kwargs):
+    """
+    something
+
+    Parameters
+    ----------
+    f0 : float
+        The average frequency.
+
+    Returns
+    -------
+    FIDsim
+    """
     def amplitude_model(t):
         return 1
 
