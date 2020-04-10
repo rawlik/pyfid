@@ -5,3 +5,5 @@ examples/output
 *.ipynb_checkpoints
 *__pycache__
 *.pyc
+
+*.DS_store
