@@ -1,6 +1,5 @@
 .. image:: https://readthedocs.org/projects/pyfid/badge/?version=latest
-:target: https://pyfid.readthedocs.io/en/latest/?badge=latest
-:alt: Documentation Status
+.. image:: https://travis-ci.org/rawlik/pyfid.svg?branch=master
 
 Installation
 ------------
