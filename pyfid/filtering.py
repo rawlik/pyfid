@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.signal
 
 
 def noise_suppression_factor(filter_function, fs, N=1000):
@@ -26,3 +27,28 @@ def noise_suppression_factor(filter_function, fs, N=1000):
     supp = s / np.std(F)
 
     return supp
+
+
+def filter_frequency_response(freqs, b, a, fs):
+    """
+    The frequency response of a filter.
+
+    Parameters
+    ----------
+    freqs : array
+        The frequencies to evaluate the response for.
+    b, a : arrays
+        The filter taps.
+    fs : float
+        The sampling frequency in Hz.
+    
+    Returns
+    -------
+    array
+        The frequency response.
+    """
+    _w, h = scipy.signal.freqz(b, a,
+        worN=freqs * np.pi / 0.5 / fs)
+
+    return abs(h) ** 2
+
