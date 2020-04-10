@@ -34,14 +34,23 @@ filter_b, filter_a = scipy.signal.butter(filter_order, [_low, _high],
 def nEDMfilter(Y):
     """
     Filter the array as in the nEDM experiment.
-    
+
     Parameters
     ----------
     Y : array
-    
+
     Returns
     -------
     np.ndarray
         Filtered array
     """
     return scipy.signal.filtfilt(filter_b, filter_a, Y)
+
+
+def signal_mask(f):
+    mask = (f > 7.5) & (f < 8.1)
+    mask = mask | (f > 12) & (f < 13)
+    mask = mask | (f > 14) & (f < 17)
+    mask = mask | (f < 2) | (f > 30)
+
+    return mask

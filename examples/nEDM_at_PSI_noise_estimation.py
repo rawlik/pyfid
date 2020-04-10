@@ -18,13 +18,6 @@ true_noise_amplitude = 10
 N = np.random.randn(T.size) * true_noise_amplitude
 S = 500 * np.exp(-T / 60) * np.sin(2 * np.pi * 7.85 * T)
 
-def mask(f):
-    mask = (f > 7.5) & (f < 8.1)
-    mask = mask | (f > 12) & (f < 13)
-    mask = mask | (f > 14) & (f < 17)
-    mask = mask | (f < 2) | (f > 30)
-
-    return mask
 
 calculated_noise_amplitude, freqs, signalFFT, windowedFFT, m, \
     fitted_frequency_response = pyfid.filtering.noise_from_signal(
@@ -32,7 +25,7 @@ calculated_noise_amplitude, freqs, signalFFT, windowedFFT, m, \
         b=pyfid.nEDMatPSI.filter_b,
         a=pyfid.nEDMatPSI.filter_a,
         fs=pyfid.nEDMatPSI.fs,
-        mask=mask,
+        mask=pyfid.nEDMatPSI.signal_mask,
         full_output=True)
 
 plt.figure("Noise level from the signal", figsize=(10, 5.5))
