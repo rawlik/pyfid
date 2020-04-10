@@ -104,7 +104,7 @@ def noise_from_signal(D, b, a, fs, mask, full_output=False):
     windowedFFT = normedfft(D * scipy.signal.windows.hann(D.size) / 0.5 * np.sqrt(2/3))
     filterFFT = filter_frequency_response(freqs, b, a, fs)
 
-    m = np.array([ ~mask(f) for f in freqs ])
+    m = ~mask(freqs)
 
     def chi2(x):
         A, C = x
