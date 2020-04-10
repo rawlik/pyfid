@@ -10,8 +10,24 @@ import scipy.signal
 fs = 100.
 "The sampling frequency."
 
+# parameters of the signal
 duration = 180.
 "The duration of the FID."
+
+drift = 9.6e-6
+"The magnitude of frequency drift over the whole FID, in Hz."
+
+snr = 144
+"The signal-to-noise ratio at the start of the FID."
+
+t1 = 143.
+"The long decay constant, in seconds"
+
+t2 = 12.
+"The short decay constant, in seconds"
+
+t1_to_t2_amplitudes_ratio = 0.1
+"The ratio of amplitudes associated with `t1` and `t2`."
 
 # the parameters of the filter
 filter_f0 = 7.852
