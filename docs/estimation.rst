@@ -46,7 +46,7 @@ TODO References
 TODO Others
 -----------
 .. automodule:: pyfid.estimation
-    :exclude-members: fit_sine, EstimationDetails, direct_fit, two_windows, window_fits, normalize_signal, divide_for_periods
+    :exclude-members: fit_sine, EstimationDetails, direct_fit, two_windows, window_fits, normalize_signal, divide_for_periods, total_phase, total_phase_t, cum_phase_t
     :members:
     :undoc-members:
     :member-order: bysource
