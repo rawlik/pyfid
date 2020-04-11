@@ -765,7 +765,7 @@ def two_windows(
         print('    red. chi^2 = {:.2g}'.format(fit_details1.reduced_chi2))
         print('    f1 = {} +/- {:.2g}'.format(f1, sf1))
         print(
-            '    ph1 = {} +/- {:.2g} (2pi)'.format(ph1 / 2 / np.pi, sph1 / 2 / pi))
+            '    ph1 = {} +/- {:.2g} (2pi)'.format(ph1 / 2 / np.pi, sph1 / 2 / np.pi))
 
         print('Fit to last {} s with model "{}"'.format(ls2, model_key))
 
@@ -804,7 +804,7 @@ def two_windows(
         print('    red. chi^2 = {:.2g}'.format(fit_details2.reduced_chi2))
         print('    f2 = {} +/- {:.2g}'.format(f2, sf2))
         print(
-            '    ph2 = {} +/- {:.2g} (2pi)'.format(ph2 / 2 / pi, sph2 / 2 / pi))
+            '    ph2 = {} +/- {:.2g} (2pi)'.format(ph2 / 2 / np.pi, sph2 / 2 / np.pi))
 
         print('Phase method:')
 
