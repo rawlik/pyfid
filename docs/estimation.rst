@@ -41,6 +41,10 @@ TODO References
 
 .. autofunction:: pyfid.estimation.two_windows
 
+.. figure:: ../examples/output/two_windows.png
+
+.. literalinclude:: ../examples/two_windows.py
+   :language: python
 
 
 TODO Others

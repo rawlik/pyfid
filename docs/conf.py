@@ -78,3 +78,4 @@ import cramer_rao
 import simulation
 import nEDM_at_PSI_noise_estimation
 import direct_fit
+import two_windows
