@@ -549,6 +549,105 @@ def divide_for_periods(D):
     return iCrossings
 
 
+def total_phase(T, D, sD, ph1, ph2, i1, i2):
+    """
+    Give total phase difference (accumulated) between point D[i1] and D[i2],
+    where ph1/ph2 are phases fitted in points D[i1]/D[i2]
+
+    FIXED SAMPLING RATE
+    """
+    if i2 - i1 < 2 and ph2 - ph1 < 0.00001:
+        return 0., np.array([])
+
+    sampling_rate = 100.0 #1/s
+
+    ph1r = np.remainder(ph1, 2*np.pi)
+    ph2r = np.remainder(ph2, 2*np.pi)
+
+    A = D[i1:i2+1]
+    sA = sD[i1:i2+1]
+    Ta = T[i1:i2+1]
+
+    Crossings = np.logical_and(A[1:]>0, A[:-1]<0)
+
+    # frequency estimation
+    FFT = np.absolute(np.fft.fft(D))
+    FFT = FFT[ : len(FFT)//2 ]
+    FFT[0] = 0.0
+    freqs = np.fft.fftfreq(D.size, 1/sampling_rate)[ : len(FFT) ]
+    f0 = abs(freqs[np.argmax(FFT)])
+
+    n = int(sampling_rate / f0 * 0.75)
+
+    # delete these crossings that are closer to other crossing than 0.75 a period
+    for i in range(0, len(Crossings)):
+        if Crossings[i]:
+            Crossings[i+1 : i+n] = False
+
+
+    n = int(np.ceil(sampling_rate / f0 * 0.5))
+
+    # correct for weird cases
+    if ph1r > 0.75 * 2*np.pi and not any(Crossings[:n]):
+        Crossings[0] = True
+
+    if ph1r < 0.25 * 2*np.pi and any(Crossings[:n]):
+        Crossings[:n] = np.r_[[False] * Crossings[:n]]
+
+    if ph2r < 0.25 * 2*np.pi and not any(Crossings[-n:]):
+        Crossings[-1] = True
+
+    if ph2r > 0.75 * 2*np.pi and any(Crossings[-n:]):
+        Crossings[-n:] = np.r_[[False] * Crossings[-n:].size]
+
+    Ncrossings = np.nonzero(Crossings)[0].size
+    Crossings_ts = ((Ta[1:] + Ta[:-1]) / 2)[Crossings]
+
+    total_ph = (2*np.pi - ph1r) + (Ncrossings-1)*2*np.pi + ph2r
+    # print(sin(ph1r), sin(ph2r))
+    # print(D[i1], D[i2])
+
+    # figure()
+    # errorbar(Ta, A, yerr=sA, fmt='k.', label='phases %.2g %.2g' % (ph1r, ph2r))
+    # for t in Crossings_ts:
+    #     axvline(t, color='red')
+    # legend(loc='best')
+    # show()
+
+    return total_ph, Crossings_ts
+
+
+def total_phase_t(T, D, sD, ph1, ph2, t1, t2):
+    try:
+        i1 = np.argwhere(T<=t1)[-1,0]
+    except IndexError:
+        i1 = 0
+
+    try:
+        i2 = np.argwhere(T>=t2)[0,0]
+    except IndexError:
+        i2 = T.size - 1
+
+    return total_phase(T, D, sD, ph1, ph2, i1, i2)
+
+
+def cum_phase_t(T, D, sD, ph1, ph2, t1, t2):
+    total_ph_diff, Crossings_ts = total_phase_t(T, D, sD, ph1, ph2, t1, t2)
+
+    ph1r = np.remainder(ph1, 2*np.pi)
+
+    # figure()
+    # ph2r = remainder(ph2, 2*pi)
+    # errorbar(T, D, yerr=sD, fmt='k.', label='phases %.2g %.2g' % (ph1r, ph2r))
+    # for t in Crossings_ts:
+    #     axvline(t, color='red')
+    # legend(loc='best')
+    # axvline(t1, color='blue')
+    # axvline(t2, color='blue')
+
+    return ph1r + total_ph_diff
+
+
 def direct_fit(
         T, D, sD,
         double_exp=True,

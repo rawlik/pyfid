@@ -59,3 +59,9 @@ Misc
 .. autofunction:: pyfid.estimation.normalize_signal
 
 .. autofunction:: pyfid.estimation.divide_for_periods
+
+.. autofunction:: pyfid.estimation.total_phase
+
+.. autofunction:: pyfid.estimation.total_phase_t
+
+.. autofunction:: pyfid.estimation.cum_phase_t
