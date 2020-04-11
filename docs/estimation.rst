@@ -31,11 +31,31 @@ Directly fit whole signal
    :language: python
 
 
+The two windows methods
+-----------------------
+In this method a fit is performed in the first part of the signal and the last.
+From each the phase is estimated, and the difference is used to estimate
+the average frequency.
+
+TODO References
+
+.. autofunction:: pyfid.estimation.two_windows
+
+
+
 TODO Others
 -----------
-
 .. automodule:: pyfid.estimation
-    :exclude-members: fit_sine, EstimationDetails
+    :exclude-members: fit_sine, EstimationDetails, direct_fit, two_windows, window_fits, normalize_signal, divide_for_periods
     :members:
     :undoc-members:
     :member-order: bysource
+
+
+Misc
+----
+.. autofunction:: pyfid.estimation.window_fits
+
+.. autofunction:: pyfid.estimation.normalize_signal
+
+.. autofunction:: pyfid.estimation.divide_for_periods
