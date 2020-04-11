@@ -63,7 +63,7 @@ def nEDMfilter(Y):
     np.ndarray
         Filtered array
     """
-    return scipy.signal.filtfilt(filter_b, filter_a, Y)
+    return scipy.signal.lfilter(filter_b, filter_a, Y)
 
 
 def signal_mask(f):
