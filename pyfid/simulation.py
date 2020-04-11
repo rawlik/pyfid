@@ -173,7 +173,7 @@ def any_poly_frequency_exp_amplitude(t1, frequency_coefficients, **kwargs):
 
 
 def const_frequency_exp_amplitude(f0, t1, **kwargs):
-    return any_poly_frequency_exp_amplitude(frequency_coefficients=[f0], **kwargs)
+    return any_poly_frequency_exp_amplitude(frequency_coefficients=[f0], t1=t1, **kwargs)
 
 
 def rand_poly_frequency_coeffs(f0, deg, drift, duration, drift_linear_mean=0):
