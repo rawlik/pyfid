@@ -6,6 +6,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 import numpy as np
 
 import pyfid.simulation
+import pyfid.estimation
 import pyfid.nEDMatPSI
 
 
@@ -48,6 +49,113 @@ class TestFilter(unittest.TestCase):
         self.assertIsInstance(f, np.ndarray)
         self.assertEqual(f.shape[0], n)
 
+
+class TestMethodsNoDrift(unittest.TestCase):
+    def setUp(self):
+        np.random.seed(0)
+
+        self.sim = pyfid.simulation.const_frequency_two_exp_amplitude(
+            fs=pyfid.nEDMatPSI.fs,
+            f0=pyfid.nEDMatPSI.filter_f0,
+            duration=pyfid.nEDMatPSI.duration,
+            snr=144,
+            t1=pyfid.nEDMatPSI.t1,
+            t2=pyfid.nEDMatPSI.t2,
+            t1_to_t2_amplitudes_ratio=pyfid.nEDMatPSI.t1_to_t2_amplitudes_ratio)
+
+    def test_direct_fit(self):
+        f, sf, details = pyfid.estimation.direct_fit(
+            T=self.sim.T,
+            D=self.sim.simulate(),
+            sD=self.sim.sigma(),
+            double_exp=True)
+        self.assertGreater(5 * sf, np.abs(f - self.sim.real_favg()))
+
+    def test_two_windows(self):
+        f, sf, details = pyfid.estimation.two_windows(
+            T=self.sim.T,
+            D=self.sim.simulate(),
+            sD=self.sim.sigma(),
+            submethod='phase',
+            prenormalize=False,
+            double_exp=(True, False),
+            phase_at_end=True,
+            win_len=(1, 3),
+            verbose=False)
+        self.assertGreater(5 * sf, np.abs(f - self.sim.real_favg()))
+
+
+class TestMethodsFilter(unittest.TestCase):
+    def setUp(self):
+        np.random.seed(0)
+
+        self.sim = pyfid.simulation.const_frequency_two_exp_amplitude(
+            fs=pyfid.nEDMatPSI.fs,
+            f0=pyfid.nEDMatPSI.filter_f0,
+            duration=pyfid.nEDMatPSI.duration,
+            snr=144,
+            t1=pyfid.nEDMatPSI.t1,
+            t2=pyfid.nEDMatPSI.t2,
+            t1_to_t2_amplitudes_ratio=pyfid.nEDMatPSI.t1_to_t2_amplitudes_ratio,
+            filter_func=pyfid.nEDMatPSI.nEDMfilter)
+
+    def test_direct_fit(self):
+        f, sf, details = pyfid.estimation.direct_fit(
+            T=self.sim.T,
+            D=self.sim.simulate(),
+            sD=self.sim.sigma(),
+            double_exp=True)
+        self.assertGreater(5 * sf, np.abs(f - self.sim.real_favg()))
+
+    def test_two_windows(self):
+        f, sf, details = pyfid.estimation.two_windows(
+            T=self.sim.T,
+            D=self.sim.simulate(),
+            sD=self.sim.sigma(),
+            submethod='phase',
+            prenormalize=False,
+            double_exp=(True, False),
+            phase_at_end=True,
+            win_len=(1, 3),
+            verbose=False)
+        self.assertGreater(5 * sf, np.abs(f - self.sim.real_favg()))
+
+
+class TestMethodsFilterAdvanceTime(unittest.TestCase):
+    def setUp(self):
+        np.random.seed(0)
+
+        self.sim = pyfid.simulation.const_frequency_two_exp_amplitude(
+            fs=pyfid.nEDMatPSI.fs,
+            f0=pyfid.nEDMatPSI.filter_f0,
+            duration=pyfid.nEDMatPSI.duration,
+            snr=144,
+            t1=pyfid.nEDMatPSI.t1,
+            t2=pyfid.nEDMatPSI.t2,
+            t1_to_t2_amplitudes_ratio=pyfid.nEDMatPSI.t1_to_t2_amplitudes_ratio,
+            filter_advance_time=1,
+            filter_func=pyfid.nEDMatPSI.nEDMfilter)
+
+    def test_direct_fit(self):
+        f, sf, details = pyfid.estimation.direct_fit(
+            T=self.sim.T,
+            D=self.sim.simulate(),
+            sD=self.sim.sigma(),
+            double_exp=True)
+        self.assertGreater(5 * sf, np.abs(f - self.sim.real_favg()))
+
+    def test_two_windows(self):
+        f, sf, details = pyfid.estimation.two_windows(
+            T=self.sim.T,
+            D=self.sim.simulate(),
+            sD=self.sim.sigma(),
+            submethod='phase',
+            prenormalize=False,
+            double_exp=(True, False),
+            phase_at_end=True,
+            win_len=(1, 3),
+            verbose=False)
+        self.assertGreater(5 * sf, np.abs(f - self.sim.real_favg()))
 
 if __name__ == '__main__':
     unittest.main()
