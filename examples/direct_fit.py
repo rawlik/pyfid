@@ -12,7 +12,7 @@ import pyfid.nEDMatPSI
 np.random.seed(0)
 outdir = os.path.join(os.path.dirname(__file__), "output")
 
-s = pyfid.simulation.rand_poly_frequency_two_exp_amplitude(
+sim = pyfid.simulation.rand_poly_frequency_two_exp_amplitude(
     fs=pyfid.nEDMatPSI.fs,
     f0=pyfid.nEDMatPSI.filter_f0,
     duration=pyfid.nEDMatPSI.duration,
@@ -25,14 +25,14 @@ s = pyfid.simulation.rand_poly_frequency_two_exp_amplitude(
     filter_advance_time=1,
     filter_func=pyfid.nEDMatPSI.nEDMfilter)
 
-D = s.simulate(random_phase=True)
+D = sim.simulate(random_phase=True)
 
 fig = plt.figure()
 
 def do_plot(ax):
-    ax.errorbar(s.T, D, yerr=s.sigma(), fmt='k,', capsize=0)
+    ax.errorbar(sim.T, D, yerr=sim.sigma(), fmt='k,', capsize=0)
     f, sf, details = pyfid.estimation.direct_fit(
-        s.T, D, s.sigma(),
+        sim.T, D, sim.sigma(),
         double_exp=True,
         plot_ax=ax)
 
