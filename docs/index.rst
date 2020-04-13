@@ -7,6 +7,7 @@ Welcome to pyfid's documentation!
 
    simulation
    estimation
+   optimization
    filter
    cramer_rao
    nEDM_at_PSI
