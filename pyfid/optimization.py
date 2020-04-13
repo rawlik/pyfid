@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.stats
+import scipy.optimize
 
 
 def std_CL(A, two_bounds=False, ignore_nans=False):
@@ -128,3 +129,32 @@ def accuracy_and_precision_different_sims(sim_gen, estimator, nsimulations,
         return accuracy, precision, saccuracy, sprecision
     else:
         return accuracy, precision
+
+
+def bisect_parameter(sim_gen, estimator, p_min, p_max, p_tol,
+        nsimulations, nsignals):
+    """
+    The unit of the drift is Hz/s (Hz of drift per seconds of duration).
+
+    Parameters
+    ----------
+    estimator : callable
+        Expected to have a signature method(p, T, D, sD), where
+
+    TODO
+    """
+    def accuracy_to_precision_minus_1(p):
+        accuracy, precision = accuracy_and_precision_different_sims(
+            sim_gen=sim_gen,
+            estimator=lambda T, D, sD: estimator(p, T, D, sD),
+            nsimulations=nsimulations,
+            nsignals=nsignals,
+            full_output=False)
+
+        return np.abs(accuracy) / precision - 1
+
+    optimum = scipy.optimize.bisect(
+        accuracy_to_precision_minus_1, p_min, p_max,
+        xtol=p_tol)
+
+    return optimum

@@ -21,7 +21,7 @@ sim_gen = lambda: pyfid.simulation.rand_poly_frequency_two_exp_amplitude(
     drift=0.1,
     duration=18.0,
     fs=100,
-    snr=144)
+    snr=200)
 
 win_lengths = np.linspace(2, 12, num=10)
 results = []
@@ -54,8 +54,29 @@ plt.errorbar(win_lengths, np.abs(results[:, 0]),
 plt.errorbar(win_lengths, results[:, 1],
     yerr=results[:, 3], fmt=".", label="precision")
 
-plt.legend()
+# calculate the optimum
+estimator = lambda p, T, D, sD: pyfid.estimation.two_windows(
+    T=T, D=D, sD=sD,
+    submethod='phase',
+    prenormalize=False,
+    double_exp=(True, False),
+    phase_at_end=True,
+    win_len=(p / 20, p),
+    verbose=False)
 
+optimum = pyfid.optimization.bisect_parameter(
+    sim_gen=sim_gen,
+    estimator=estimator,
+    p_min=2,
+    p_max=12,
+    p_tol=1,
+    nsimulations=10,
+    nsignals=10
+)
+
+plt.axvline(optimum, color="black", label="optimal size")
+
+plt.legend()
 plt.yscale('log', nonposy='clip')
 plt.xlabel('Second window size (s)')
 plt.ylabel('Hz')
