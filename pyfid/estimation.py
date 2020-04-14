@@ -7,6 +7,7 @@ import inspect
 import numpy as np
 import scipy.optimize
 import scipy.stats
+import warnings
 
 # abs is to ensure that sine is not mulitlied by -1 which artificialy shifts
 # phase by pi
@@ -229,13 +230,16 @@ def fit_sine(X, Y, sigma=None, plot_ax=None, model_key='damped_sine_DC',
         p0[1] = p0[1] + 2 * np.pi * f0 * t0
 
         try:
-            popt, pcov, infodict, errmsg, ier = scipy.optimize.curve_fit(
-                model, Xt0, Y,
-                sigma=sigma,
-                p0=p0,
-                # maxfev=10000000,
-                maxfev=10000,
-                full_output=True)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore",
+                    category=scipy.optimize.OptimizeWarning)
+                popt, pcov, infodict, errmsg, ier = scipy.optimize.curve_fit(
+                    model, Xt0, Y,
+                    sigma=sigma,
+                    p0=p0,
+                    # maxfev=10000000,
+                    maxfev=10000,
+                    full_output=True)
         except RuntimeError:
             # could not fit
             popt, pcov = [np.NaN] * len(p0), np.ones((len(p0), len(p0)))
