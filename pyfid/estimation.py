@@ -71,7 +71,7 @@ class EstimationDetails:
 def fit_sine(X, Y, sigma=None, plot_ax=None, model_key='damped_sine_DC',
              optimize_var_ph=False):
     # check if size of data is larger than number of model parameters
-    nparms = len(inspect.getargspec(models[model_key])[0]) - 1
+    nparms = len(inspect.signature(models[model_key]).parameters) - 1
     if len(X) <= nparms:
         # don't even attempt a fit
         details = EstimationDetails()
@@ -752,7 +752,9 @@ def two_windows(
     sf1 = np.sqrt(pcov[0, 0])
 
     ph1 = np.remainder(popt[1], 2 * np.pi)
-    sph1 = np.sqrt(pcov[1, 1])
+    with np.errstate(invalid="ignore"):
+        # sometimes the covariance of the parameters cannot be estimated
+        sph1 = np.sqrt(pcov[1, 1])
 
     # construct an object to hold details about the estimation
     details = EstimationDetails()
