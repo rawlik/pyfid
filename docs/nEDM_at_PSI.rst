@@ -6,6 +6,7 @@ Parameters of the FID
 The parameters are stored in the `pyfid.nEDMatPSI` module.
 
 .. automodule:: pyfid.nEDMatPSI
+   :exclude-members: optimize_window_size
    :members:
    :undoc-members:
    :member-order: bysource
@@ -31,3 +32,8 @@ Estimating the amplitude of noise from a signal
 
 .. literalinclude:: ../examples/nEDM_at_PSI_noise_estimation.py
    :language: python
+
+
+Optimizing the window size
+--------------------------
+.. autofunction:: pyfid.nEDMatPSI.optimize_window_size
