@@ -100,9 +100,9 @@ def optimize_window_size(noise, drift_mean, drift_std, t1, t2,
         plot_afterwards=False, verbose=False):
     """
     This function is very specific to the nEDM experiment.
-    """
-    log_scan = True
 
+    TODO
+    """
     if data_amplitude is None:
         sim_gen = lambda: pyfid.simulation.rand_poly_frequency_two_exp_amplitude(
             f0=pyfid.nEDMatPSI.filter_f0,
