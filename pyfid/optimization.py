@@ -132,7 +132,7 @@ def accuracy_and_precision_different_sims(sim_gen, estimator, nsimulations,
 
 
 def bisect_parameter(sim_gen, estimator, p_min, p_max, p_tol,
-        nsimulations, nsignals):
+        nsimulations, nsignals, sigmas=0):
     """
     The unit of the drift is Hz/s (Hz of drift per seconds of duration).
 
@@ -143,18 +143,20 @@ def bisect_parameter(sim_gen, estimator, p_min, p_max, p_tol,
 
     TODO
     """
-    def accuracy_to_precision_minus_1(p):
-        accuracy, precision = accuracy_and_precision_different_sims(
-            sim_gen=sim_gen,
-            estimator=lambda T, D, sD: estimator(p, T, D, sD),
-            nsimulations=nsimulations,
-            nsignals=nsignals,
-            full_output=False)
+    def fun(p):
+        accuracy, precision, saccuracy, sprecision = \
+            accuracy_and_precision_different_sims(
+                sim_gen=sim_gen,
+                estimator=lambda T, D, sD: estimator(p, T, D, sD),
+                nsimulations=nsimulations,
+                nsignals=nsignals,
+                full_output=True)
 
-        return np.abs(accuracy) / precision - 1
+        conservative_precision = precision + sigmas * sprecision
+        conservative_accuracy = np.abs(accuracy) - sigmas * saccuracy
 
-    optimum = scipy.optimize.bisect(
-        accuracy_to_precision_minus_1, p_min, p_max,
-        xtol=p_tol)
+        return conservative_accuracy - conservative_precision
+
+    optimum = scipy.optimize.bisect(fun, p_min, p_max, xtol=p_tol)
 
     return optimum
