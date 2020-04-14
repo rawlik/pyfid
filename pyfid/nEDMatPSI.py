@@ -2,8 +2,12 @@
 This module holds the parameters specific to the FID of the mercury
 comagnetometer's signal in the nEDM-at-PSI experiment.
 """
-
+import numpy as np
 import scipy.signal
+
+import pyfid.simulation
+import pyfid.estimation
+import pyfid.optimization
 
 
 # sampling frequency
@@ -87,3 +91,89 @@ def signal_mask(f):
     mask = mask | (f < 2) | (f > 30)
 
     return mask
+
+
+def optimize_window_size(noise, drift_mean, drift_std, t1, t2,
+        t1_to_t2_amplitudes_ratio, cycle_duration, first_window_divisor=20,
+        f_change_degree=1, Ndrifts=10, Nfor_drift=10, size_precision=1,
+        Npoints=10, with_filter=True, data_amplitude=None,
+        plot_afterwards=False, verbose=False):
+    """
+    This function is very specific to the nEDM experiment.
+    """
+    log_scan = True
+
+    if data_amplitude is None:
+        sim_gen = lambda: pyfid.simulation.rand_poly_frequency_two_exp_amplitude(
+            f0=pyfid.nEDMatPSI.filter_f0,
+            t1=t1,
+            t2=t2,
+            t1_to_t2_amplitudes_ratio=t1_to_t2_amplitudes_ratio,
+            deg=f_change_degree,
+            drift=drift_std * cycle_duration,
+            drift_linear_mean=drift_mean,
+            duration=cycle_duration,
+            fs=pyfid.nEDMatPSI.fs,
+            snr=1 / noise,
+            filter_func=pyfid.nEDMatPSI.nEDMfilter if with_filter else None)
+    else:
+        # TODO
+        raise NotImplementedError("data amplitude not implemented yet")
+
+
+    # first test, whether the direct fit is okay
+    direct_fit_estimator = lambda T, D, sD: pyfid.estimation.direct_fit(
+        T, D, sD, double_exp=True)
+
+    accuracy, precision, saccuracy, sprecision = \
+        pyfid.optimization.accuracy_and_precision_different_sims(
+            sim_gen=sim_gen,
+            estimator=direct_fit_estimator,
+            nsimulations=Ndrifts,
+            nsignals=Nfor_drift,
+            full_output=True)
+
+    conservative_precision = precision + 3 * sprecision
+    conservative_accuracy = np.abs(accuracy) - 3 * saccuracy
+
+    direct_fit_ok = conservative_accuracy < conservative_precision
+
+    if direct_fit_ok:
+        return 0
+    else:
+        estimator = lambda p, T, D, sD: pyfid.estimation.two_windows(
+            T=T, D=D, sD=sD,
+            submethod='phase',
+            prenormalize=False,
+            double_exp=(True, False),
+            phase_at_end=True,
+            win_len=(p / first_window_divisor, p),
+            verbose=False)
+
+        max_second_size = cycle_duration * first_window_divisor / (first_window_divisor + 1)
+
+        bisect_to_max = lambda max_win_size: pyfid.optimization.bisect_parameter(
+            sim_gen=sim_gen,
+            estimator=estimator,
+            p_min=3,
+            p_max=max_win_size,
+            p_tol=size_precision,
+            nsimulations=Ndrifts,
+            nsignals=Nfor_drift)
+
+        try:
+            optimum = bisect_to_max(max_second_size)
+        except ValueError:
+            try:
+                optimum = bisect_to_max(0.8 * max_second_size)
+            except ValueError:
+                try:
+                    optimum = bisect_to_max(0.6 * max_second_size)
+                except ValueError:
+                    try:
+                        optimum = bisect_to_max(0.4 * max_second_size)
+                    except ValueError:
+                        # the final fallback value
+                        optimum = 10.
+
+            return optimum
