@@ -70,7 +70,7 @@ class TestMethodsNoDrift(unittest.TestCase):
             t1_to_t2_amplitudes_ratio=pyfid.nEDMatPSI.t1_to_t2_amplitudes_ratio)
 
     def test_direct_fit(self):
-        f, sf, details = pyfid.estimation.direct_fit(
+        f, sf, _details = pyfid.estimation.direct_fit(
             T=self.sim.T,
             D=self.sim.simulate(),
             sD=self.sim.sigma(),
@@ -78,7 +78,7 @@ class TestMethodsNoDrift(unittest.TestCase):
         self.assertGreater(5 * sf, np.abs(f - self.sim.real_favg()))
 
     def test_two_windows(self):
-        f, sf, details = pyfid.estimation.two_windows(
+        f, sf, _details = pyfid.estimation.two_windows(
             T=self.sim.T,
             D=self.sim.simulate(),
             sD=self.sim.sigma(),
@@ -106,7 +106,7 @@ class TestMethodsFilter(unittest.TestCase):
             filter_func=pyfid.nEDMatPSI.nEDMfilter)
 
     def test_direct_fit(self):
-        f, sf, details = pyfid.estimation.direct_fit(
+        f, sf, _details = pyfid.estimation.direct_fit(
             T=self.sim.T,
             D=self.sim.simulate(),
             sD=self.sim.sigma(),
@@ -114,7 +114,7 @@ class TestMethodsFilter(unittest.TestCase):
         self.assertGreater(5 * sf, np.abs(f - self.sim.real_favg()))
 
     def test_two_windows(self):
-        f, sf, details = pyfid.estimation.two_windows(
+        f, sf, _details = pyfid.estimation.two_windows(
             T=self.sim.T,
             D=self.sim.simulate(),
             sD=self.sim.sigma(),
@@ -143,7 +143,7 @@ class TestMethodsFilterAdvanceTime(unittest.TestCase):
             filter_func=pyfid.nEDMatPSI.nEDMfilter)
 
     def test_direct_fit(self):
-        f, sf, details = pyfid.estimation.direct_fit(
+        f, sf, _details = pyfid.estimation.direct_fit(
             T=self.sim.T,
             D=self.sim.simulate(),
             sD=self.sim.sigma(),
@@ -151,7 +151,7 @@ class TestMethodsFilterAdvanceTime(unittest.TestCase):
         self.assertGreater(5 * sf, np.abs(f - self.sim.real_favg()))
 
     def test_two_windows(self):
-        f, sf, details = pyfid.estimation.two_windows(
+        f, sf, _details = pyfid.estimation.two_windows(
             T=self.sim.T,
             D=self.sim.simulate(),
             sD=self.sim.sigma(),
