@@ -163,5 +163,91 @@ class TestMethodsFilterAdvanceTime(unittest.TestCase):
             verbose=False)
         self.assertGreater(5 * sf, np.abs(f - self.sim.real_favg()))
 
+
+class TestOptimization(unittest.TestCase):
+    def setUp(self):
+        np.random.seed(0)
+        self.sim_gen = lambda: pyfid.simulation.rand_poly_frequency_two_exp_amplitude(
+            f0=7.8,
+            t1=14.3,
+            t2=1.2,
+            t1_to_t2_amplitudes_ratio=0.1,
+            deg=1,
+            drift=0.1,
+            duration=18.0,
+            fs=100,
+            snr=200)
+
+    def test_accuracy_and_precision(self):
+        direct_fit_estimator = lambda T, D, sD: pyfid.estimation.direct_fit(
+            T, D, sD, double_exp=True)
+
+        pyfid.optimization.accuracy_and_precision_different_sims(
+                sim_gen=self.sim_gen,
+                estimator=direct_fit_estimator,
+                nsimulations=5,
+                nsignals=5)
+
+    def test_scan(self):
+        win_lengths = np.linspace(2, 12, num=10)
+
+        for win_length in win_lengths:
+            estimator = lambda T, D, sD: pyfid.estimation.two_windows(
+                T=T, D=D, sD=sD,
+                submethod='phase',
+                prenormalize=False,
+                double_exp=(True, False),
+                phase_at_end=True,
+                win_len=(win_length / 20, win_length),
+                verbose=False)
+
+            pyfid.optimization.accuracy_and_precision_different_sims(
+                sim_gen=self.sim_gen,
+                estimator=estimator,
+                nsimulations=5,
+                nsignals=5,
+                full_output=True)
+
+    def test_bisection(self):
+        estimator = lambda p, T, D, sD: pyfid.estimation.two_windows(
+            T=T, D=D, sD=sD,
+            submethod='phase',
+            prenormalize=False,
+            double_exp=(True, False),
+            phase_at_end=True,
+            win_len=(p / 20, p),
+            verbose=False)
+
+        _optimum = pyfid.optimization.bisect_parameter(
+            sim_gen=self.sim_gen,
+            estimator=estimator,
+            p_min=2,
+            p_max=12,
+            p_tol=1,
+            nsimulations=10,
+            nsignals=10)
+
+    def test_bisection_conservative(self):
+        estimator = lambda p, T, D, sD: pyfid.estimation.two_windows(
+            T=T, D=D, sD=sD,
+            submethod='phase',
+            prenormalize=False,
+            double_exp=(True, False),
+            phase_at_end=True,
+            win_len=(p / 20, p),
+            verbose=False)
+
+        _optimum = pyfid.optimization.bisect_parameter(
+            sim_gen=self.sim_gen,
+            estimator=estimator,
+            p_min=2,
+            p_max=12,
+            p_tol=1,
+            nsimulations=10,
+            nsignals=10,
+            sigmas=1)
+
+
+
 if __name__ == '__main__':
     unittest.main()
