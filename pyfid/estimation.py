@@ -749,7 +749,9 @@ def two_windows(
         model_key='double_damped_sine' if double_exp[0] else model_key)
 
     f1 = popt[0]
-    sf1 = np.sqrt(pcov[0, 0])
+    with np.errstate(invalid="ignore"):
+        # sometimes the covariance of the parameters cannot be estimated
+        sf1 = np.sqrt(pcov[0, 0])
 
     ph1 = np.remainder(popt[1], 2 * np.pi)
     with np.errstate(invalid="ignore"):
