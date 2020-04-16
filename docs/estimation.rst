@@ -3,13 +3,12 @@ Estimation
 
 Introduction
 ------------
-The package includes many methods to estimate the frequency.
+The package is structured in a way to provide different methods of estimating
+the average frequency of an FID signal.
 
-.. autoclass:: pyfid.estimation.EstimationDetails
 
-
-Direct fitting
---------------
+Fitting an arbitrary oscillating signal
+---------------------------------------
 The underlying heavy lifting is done by the `pyfid.estimation.fit_sine` function.
 
 .. autofunction:: pyfid.estimation.fit_sine
@@ -19,6 +18,12 @@ This function can use one of many models for fitting:
 .. literalinclude:: ../pyfid/estimation.py
     :language: python
     :lines: 13-37
+
+It returns, like all estimation methods in this module, an `EstimationDetails`
+object, which holds various, often method-specific information about the
+estimation.
+
+.. autoclass:: pyfid.estimation.EstimationDetails
 
 
 Directly fit whole signal
