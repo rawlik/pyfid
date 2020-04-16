@@ -586,7 +586,7 @@ def divide_for_periods(D):
     return iCrossings
 
 
-def total_phase(T, D, sD, ph1, ph2, i1, i2):
+def total_phase(T, D, sD, ph1, ph2, i1, i2, fs):
     """
     Give total phase difference (accumulated) between point D[i1] and D[i2],
     where ph1/ph2 are phases fitted in points D[i1]/D[i2]
@@ -595,8 +595,6 @@ def total_phase(T, D, sD, ph1, ph2, i1, i2):
     """
     if i2 - i1 < 2 and ph2 - ph1 < 0.00001:
         return 0., np.array([])
-
-    sampling_rate = 100.0 #1/s
 
     ph1r = np.remainder(ph1, 2*np.pi)
     ph2r = np.remainder(ph2, 2*np.pi)
@@ -611,10 +609,10 @@ def total_phase(T, D, sD, ph1, ph2, i1, i2):
     FFT = np.absolute(np.fft.fft(D))
     FFT = FFT[ : len(FFT)//2 ]
     FFT[0] = 0.0
-    freqs = np.fft.fftfreq(D.size, 1/sampling_rate)[ : len(FFT) ]
+    freqs = np.fft.fftfreq(D.size, 1/fs)[ : len(FFT) ]
     f0 = abs(freqs[np.argmax(FFT)])
 
-    n = int(sampling_rate / f0 * 0.75)
+    n = int(fs / f0 * 0.75)
 
     # delete these crossings that are closer to other crossing than 0.75 a period
     for i in range(0, len(Crossings)):
@@ -622,7 +620,7 @@ def total_phase(T, D, sD, ph1, ph2, i1, i2):
             Crossings[i+1 : i+n] = False
 
 
-    n = int(np.ceil(sampling_rate / f0 * 0.5))
+    n = int(np.ceil(fs / f0 * 0.5))
 
     # correct for weird cases
     if ph1r > 0.75 * 2*np.pi and not any(Crossings[:n]):
@@ -654,7 +652,7 @@ def total_phase(T, D, sD, ph1, ph2, i1, i2):
     return total_ph, Crossings_ts
 
 
-def total_phase_t(T, D, sD, ph1, ph2, t1, t2):
+def total_phase_t(T, D, sD, ph1, ph2, t1, t2, fs):
     try:
         i1 = np.argwhere(T<=t1)[-1,0]
     except IndexError:
@@ -665,11 +663,11 @@ def total_phase_t(T, D, sD, ph1, ph2, t1, t2):
     except IndexError:
         i2 = T.size - 1
 
-    return total_phase(T, D, sD, ph1, ph2, i1, i2)
+    return total_phase(T, D, sD, ph1, ph2, i1, i2, fs)
 
 
-def cum_phase_t(T, D, sD, ph1, ph2, t1, t2):
-    total_ph_diff, Crossings_ts = total_phase_t(T, D, sD, ph1, ph2, t1, t2)
+def cum_phase_t(T, D, sD, ph1, ph2, t1, t2, fs):
+    total_ph_diff, Crossings_ts = total_phase_t(T, D, sD, ph1, ph2, t1, t2, fs)
 
     ph1r = np.remainder(ph1, 2*np.pi)
 
@@ -860,7 +858,8 @@ def two_windows(
         ph1=ph1,
         ph2=ph2,
         i1=np.argwhere(Tb == T[0]).flatten()[0],
-        i2=np.argwhere(Tb == (T[-1] if phase_at_end else tl2)).flatten()[0])
+        i2=np.argwhere(Tb == (T[-1] if phase_at_end else tl2)).flatten()[0],
+        fs=fs)
 
     if phase_at_end:
         f = total_ph / (T[-1] - T[0]) / (2 * np.pi)
