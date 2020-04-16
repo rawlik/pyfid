@@ -68,8 +68,45 @@ class EstimationDetails:
         return d
 
 
-def fit_sine(X, Y, sigma=None, plot_ax=None, model_key='damped_sine_DC',
-             optimize_var_ph=False):
+def fit_sine(X, Y, model_key, sigma=None, plot_ax=None, optimize_var_ph=False):
+    """
+    Fit a an oscillating-signal model to data.
+
+    Uses of the the models defined in `pyfid.estimation.models`, for which
+    a robust initial parameter guessing is implemented. The final fit is
+    performed by the `scipy.optimize.curve_fit` function.
+
+    Parameters
+    ----------
+    X : array
+        The array of x values.
+    Y : array
+        The array of y values
+    model_key : str
+        Has to refer to one of the built-in models define in the
+        dictionary `pyfid.estimation.models`.
+    sigma : array
+        The array of uncertainties for `Y` values used to determine weights
+        in fitting. Passed on to `scipy.optimize.curve_fit`. Default is
+        an array of ones.
+    plot_ax : matplotlib.Axes instance
+        If passed the result of the fit will be plotted there.
+    optimize_var_ph : bool
+        If True it will shift the array `X` such, that the point corresponding
+        to `x=0` is where the estimators of phase and frequency are
+        uncorrelated. Care has to be taken when interpreting other
+        time-dependent model parameters! Default is False.
+
+    Retruns
+    -------
+    popt : array
+        The array of the optimal parameters.
+    pcov : array
+        The estimator of the covariance matrix of the parameters in the
+        minimum.
+    details : EstimationDetails
+        An object holding auxillary information about the fit.
+    """
     # check if size of data is larger than number of model parameters
     nparms = len(inspect.signature(models[model_key]).parameters) - 1
     if len(X) <= nparms:
