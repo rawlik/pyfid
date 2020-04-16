@@ -74,7 +74,7 @@ class TestMethodsNoDrift(unittest.TestCase):
             T=self.sim.T,
             D=self.sim.simulate(),
             sD=self.sim.sigma(),
-            double_exp=True)
+            model_key="double_damped_sine_DC")
         self.assertGreater(5 * sf, np.abs(f - self.sim.real_favg()))
 
     def test_two_windows(self):
@@ -110,7 +110,7 @@ class TestMethodsFilter(unittest.TestCase):
             T=self.sim.T,
             D=self.sim.simulate(),
             sD=self.sim.sigma(),
-            double_exp=True)
+            model_key="double_damped_sine_DC")
         self.assertGreater(5 * sf, np.abs(f - self.sim.real_favg()))
 
     def test_two_windows(self):
@@ -147,7 +147,7 @@ class TestMethodsFilterAdvanceTime(unittest.TestCase):
             T=self.sim.T,
             D=self.sim.simulate(),
             sD=self.sim.sigma(),
-            double_exp=True)
+            model_key="double_damped_sine_DC")
         self.assertGreater(5 * sf, np.abs(f - self.sim.real_favg()))
 
     def test_two_windows(self):
@@ -180,7 +180,7 @@ class TestOptimization(unittest.TestCase):
 
     def test_accuracy_and_precision(self):
         direct_fit_estimator = lambda T, D, sD: pyfid.estimation.direct_fit(
-            T, D, sD, double_exp=True)
+            T, D, sD, model_key="double_damped_sine_DC")
 
         pyfid.optimization.accuracy_and_precision_different_sims(
                 sim_gen=self.sim_gen,

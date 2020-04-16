@@ -123,7 +123,7 @@ def optimize_window_size(noise, drift_mean, drift_std, t1, t2,
 
     # first test, whether the direct fit is okay
     direct_fit_estimator = lambda T, D, sD: pyfid.estimation.direct_fit(
-        T, D, sD, double_exp=True)
+        T, D, sD, model_key="double_damped_sine_DC")
 
     accuracy, precision, saccuracy, sprecision = \
         pyfid.optimization.accuracy_and_precision_different_sims(

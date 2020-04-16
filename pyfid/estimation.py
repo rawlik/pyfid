@@ -683,24 +683,45 @@ def cum_phase_t(T, D, sD, ph1, ph2, t1, t2, fs):
     return ph1r + total_ph_diff
 
 
-def direct_fit(
-        T, D, sD,
-        double_exp=True,
-        plot_ax=None):
+def direct_fit(T, D, sD, model_key, plot_ax=None):
     """
-    Fit the whole signal.
+    Directly fit the whole signal in order to estimate its frequency.
 
     This method simply fits the whole signal. If double_exp is False then
     fit model is an exponentially damped sine, if True - damping is a sum of
     two exponents.
 
-    If plot_ax is given - plot there.
+    Parameters
+    ----------
+    T : array
+        The array of times where the signal is sampled.
+    D : array
+        The samples of the signal.
+    sD : array
+        The array of the uncertainties (standard-deviation estimates)
+        of the samples, used to determine weight for the fit.
+    model_key : str
+        Has to refer to one of the built-in models define in the
+        dictionary `pyfid.estimation.models`.
+    plot_ax : matplotlib.Axes, optional
+        If passed the result of the fit will be plotted there.
+
+    Returns
+    -------
+    f : float
+        The estimator of the average frequency of the signal.
+    sf : float
+        The estimator of the uncertainty of the average frequency estimate.
+    details: EstimationDetails
+        On object holding the details of the estimation. `details.fit_details`
+        contains further details from the underlying
+        `pyfid.estimation.fit_sine` function.
     """
     popt, pcov, fit_details = fit_sine(
         T - T[0], D,
         sigma=sD,
         plot_ax=plot_ax,
-        model_key='double_damped_sine_DC' if double_exp else 'damped_sine_DC')
+        model_key=model_key)
 
     f = popt[0]
     sf = np.sqrt(pcov[0, 0])

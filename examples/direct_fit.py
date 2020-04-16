@@ -32,8 +32,8 @@ fig = plt.figure()
 def do_plot(ax):
     ax.errorbar(sim.T, D, yerr=sim.sigma(), fmt='k,', capsize=0)
     f, sf, details = pyfid.estimation.direct_fit(
-        sim.T, D, sim.sigma(),
-        double_exp=True,
+        sim.T, D, sD,
+        model_key="double_damped_sine_DC",
         plot_ax=ax)
 
 do_plot(fig.add_subplot(211))
