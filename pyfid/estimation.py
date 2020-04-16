@@ -85,13 +85,13 @@ def fit_sine(X, Y, model_key, sigma=None, plot_ax=None, optimize_var_ph=False):
     model_key : str
         Has to refer to one of the built-in models define in the
         dictionary `pyfid.estimation.models`.
-    sigma : array
+    sigma : array, optional
         The array of uncertainties for `Y` values used to determine weights
         in fitting. Passed on to `scipy.optimize.curve_fit`. Default is
         an array of ones.
-    plot_ax : matplotlib.Axes instance
+    plot_ax : matplotlib.Axes, optional
         If passed the result of the fit will be plotted there.
-    optimize_var_ph : bool
+    optimize_var_ph : bool, optional
         If True it will shift the array `X` such, that the point corresponding
         to `x=0` is where the estimators of phase and frequency are
         uncorrelated. Care has to be taken when interpreting other
