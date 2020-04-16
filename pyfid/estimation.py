@@ -97,7 +97,7 @@ def fit_sine(X, Y, model_key, sigma=None, plot_ax=None, optimize_var_ph=False):
         uncorrelated. Care has to be taken when interpreting other
         time-dependent model parameters! Default is False.
 
-    Retruns
+    Returns
     -------
     popt : array
         The array of the optimal parameters.
