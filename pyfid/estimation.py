@@ -469,12 +469,8 @@ def window_fits(
         return Tf, Dt, Popt, sPopt, Ncrossings
 
 
-def normalize_signal(T, D, sD):
+def normalize_signal(T, D, sD, amplitude_method):
     D = D - np.average(D)
-
-    amplitude_method = 'every_period_fit'
-    # amplitude_method = 'double_exp_decay_fit'
-    # amplitude_method = 'every_period_max'
 
     # exp decay fit
     if amplitude_method == 'double_exp_decay_fit':
@@ -760,7 +756,8 @@ def two_windows(
         model_key = 'sine_unit_amplitude'
         Torig = T.copy()
         Dorig = D.copy() - np.average(D)
-        T, D, sD = normalize_signal(T, D, sD)
+        T, D, sD = normalize_signal(T, D, sD,
+            amplitude_method='every_period_fit')
     else:
         model_key = 'damped_sine'
         D = D - np.average(D)
