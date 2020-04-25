@@ -56,6 +56,13 @@ class TestFilter(unittest.TestCase):
         self.assertEqual(f.shape[0], n)
 
 
+class TestEstimationMisc(unittest.TestCase):
+    def test_divide_for_periods(self):
+        d = np.sin(np.linspace(0, 10, 100))
+        iCrossings = pyfid.estimation.divide_for_periods(d)
+        self.assertIsInstance(iCrossings, np.ndarray)
+
+
 class TestMethodsNoDrift(unittest.TestCase):
     def setUp(self):
         np.random.seed(0)
