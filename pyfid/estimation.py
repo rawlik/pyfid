@@ -574,8 +574,21 @@ def normalize_signal(T, D, sD, amplitude_method):
 
 
 def divide_for_periods(D):
-    """For given sine-like signal D return array of indices where it can be
-    subdivided into periods.
+    """
+    Return the indices where the signal crosses zero.
+
+    For given oscillating signal `D` return array of indices where it crosses
+    zero.
+
+    Parameters
+    ----------
+    D : array
+        The signal.
+
+    Returns
+    -------
+    iCrossings : array
+        The array of the zero-crossings
     """
     Crossings = np.logical_and(D[1:] > 0, D[:-1] < 0)
     iCrossings = np.nonzero(Crossings)[0]
