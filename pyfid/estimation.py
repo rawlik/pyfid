@@ -9,7 +9,7 @@ import scipy.optimize
 import scipy.stats
 import warnings
 
-# abs is to ensure that sine is not mulitlied by -1 which artificialy shifts
+# abs is to ensure that sine is not multiplied by -1 which artificially shifts
 # phase by pi
 models = {
     "sine_unit_amplitude":
