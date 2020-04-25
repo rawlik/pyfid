@@ -43,11 +43,22 @@ class EstimationDetails:
     """
 
     def get_string_description(self):
+        """
+        Return a string describing all information in the instance.
+
+        Returns
+        -------
+        s : Str
+            The description.
+        """
         s = ''
         for attribute in dir(self):
+            # skip built-in attributes
             if attribute[:2] != '__':
                 value = getattr(self, attribute)
                 if 'get_string_description' in dir(value):
+                    # call recrsively
+                    # EstimationDetails may hold instances of itself
                     s += '%s:\n' % attribute
                     description = value.get_string_description()
                     s += '    ' + description[:-1].replace('\n', '\n    ')
@@ -57,6 +68,13 @@ class EstimationDetails:
         return s
 
     def get_dictionary(self):
+        """
+        Return a dictionary containing all the information in the instance.
+
+        Returns
+        -------
+        d : Dict
+        """
         d = {}
         for attribute in dir(self):
             if attribute[:2] != '__':
